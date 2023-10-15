@@ -5,6 +5,7 @@ we can wrap our functions between asyncHandler and
 it will take care of the duty of try catch block
 */ 
 
+const Contact = require("../models/contactModel");      // getting the schema for database in mongoDB from model
 
 
 /* 
@@ -14,7 +15,8 @@ request : GET /api/contacts
 
 const getContacts = asyncHandler(async (req,res)=>{
     
-    res.status(200).json({"Message" : "Get all contacts"});
+    const contact = await Contact.find();       // finding contact <model>.<method-name>()
+    res.status(200).json(contact);
 })
 
 
@@ -30,7 +32,16 @@ const createContact = asyncHandler(async (req,res)=>{
         res.status(400);
         throw new Error("All fields are mandatory !")
     }
-    res.status(200).json({"Message" : "Create Contact", "Body" : req.body});
+
+    // above tests has been passed
+
+    const contact = await Contact.create({
+        name,
+        email,
+        MobileNo
+    })
+
+    res.status(200).json(contact);
 })
 
 
@@ -39,7 +50,13 @@ description : Get contact with given ID
 request : GET /api/contacts/:id 
 */
 const getContactByID = asyncHandler(async (req,res)=>{
-    res.status(200).json({"Message" : `Get contacts with id = ${req.params.id}`});
+
+    const contact = await Contact.findById(req.params.id);
+    if(!contact){   
+        res.status(404);
+        throw new Error("Contact Not found");
+    }
+    res.status(200).json(contact);
 })
 
 
