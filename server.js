@@ -5,6 +5,9 @@ const dotenv = require("dotenv").config();      // for accessing contents from .
 const app = express();
 
 const contactRoutes = require("./routes/contactRoutes");
+const connectDB = require("./config/dbConnection");
+
+connectDB()           // to establish connection with mongoDB database
 
 const port = process.env.PORT || 5000;
 
