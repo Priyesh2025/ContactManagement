@@ -17,6 +17,11 @@ request : POST /api/contacts
 */
 const createContact = (req,res)=>{
     console.log(req.body);
+    const {name , email , MobileNo} = req.body;
+    if(!name || !email || !MobileNo){
+        res.status(400);
+        throw new Error("All fields are mandatory !")
+    }
     res.status(200).json({"Message" : "Create Contact", "Body" : req.body});
 }
 
