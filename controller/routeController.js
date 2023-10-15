@@ -65,7 +65,21 @@ description : Update contact with given ID
 request : PUT /api/contacts/:id 
 */
 const updateContactWithID = asyncHandler(async (req,res)=>{
-    res.status(200).json({"Message" : `Update contacts with id = ${req.params.id}`});
+
+    // first find the contact
+    const contact = await Contact.findById(req.params.id);
+    if(!contact){   
+        res.status(404);
+        throw new Error("Contact Not found");
+    }
+
+    const updatedContact = await Contact.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        {new : true}
+    );
+
+    res.status(200).json(updatedContact);
 })
 
 
