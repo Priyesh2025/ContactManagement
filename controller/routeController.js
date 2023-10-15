@@ -26,7 +26,6 @@ description : create contact
 request : POST /api/contacts 
 */
 const createContact = asyncHandler(async (req,res)=>{
-    console.log(req.body);
     const {name , email , MobileNo} = req.body;
     if(!name || !email || !MobileNo){
         res.status(400);
@@ -73,6 +72,7 @@ const updateContactWithID = asyncHandler(async (req,res)=>{
         throw new Error("Contact Not found");
     }
 
+    // update 
     const updatedContact = await Contact.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -89,7 +89,21 @@ description : Delete contact with given ID
 request : DELETE /api/contacts/:id 
 */
 const deleteContactWithID = asyncHandler(async (req,res)=>{
-    res.status(200).json({"Message" : `Delete contacts with id = ${req.params.id}`});
+
+    // first find the contact
+    const contact = await Contact.findById(req.params.id);
+    if(!contact){   
+        res.status(404);
+        throw new Error("Contact Not found");
+    }
+
+    try{
+        await Contact.deleteOne();
+    }catch(err){
+        console.log(err);
+    }
+    
+    res.status(200).json(contact);
 })
 
 

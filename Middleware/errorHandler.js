@@ -3,6 +3,7 @@ const {constants} = require("../constants")
 const errorHandler = (err , req, res, next)=>{
 
     const statusCode = res.statusCode ? res.statusCode : 500;
+    console.log("Status Code : ",statusCode);
     switch(statusCode){
 
         case 404:
