@@ -1,3 +1,8 @@
+// we want all the contact related data and operation to be done only be valid user (owner).
+// Therefore we will make all of them as private using validate token
+
+
+
 const asyncHandler = require("express-async-handler")      
 /* 
 as a alternative of try catch block.

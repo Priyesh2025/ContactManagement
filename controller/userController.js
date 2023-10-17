@@ -90,7 +90,7 @@ const loginUser = asyncHandler(async (req,res)=>{
             },    
         },
         process.env.JWT_SECRET_TOKEN,
-        {expiresIn : "1m"}
+        {expiresIn : "5m"}
     )
     res.status(200).json({"jwt token" : accessToken});
 
