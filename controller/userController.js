@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler")      
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv").config();      // for accessing contents from .env files
 /* 
 as a alternative of try catch block.
 we can wrap our functions between asyncHandler and
@@ -60,7 +62,38 @@ description : Get all contact
 request : GET /api/user/login
 */
 const loginUser = asyncHandler(async (req,res)=>{
-    res.json({"message" : "Login Page"});
+
+    const {email , password} = req.body;
+    if(!email || !password){
+        res.status(400);
+        throw new Error("All field are mandatory");
+    }
+
+    const user = await User.findOne({email});           
+    if(!user){
+        res.status(400);
+        throw new Error("User does not exist");
+    }
+
+    const PasswordIsTrue = await bcrypt.compare(password,user.password);
+    if(!PasswordIsTrue){
+        res.status(400);
+        throw new Error("Incorrect Password");
+    }
+
+    const accessToken = await jwt.sign(
+        {
+            user : {
+                username : user.username,
+                email : user.email,
+                id : user.id,
+            },    
+        },
+        process.env.JWT_SECRET_TOKEN,
+        {expiresIn : "1m"}
+    )
+    res.status(200).json({"jwt token" : accessToken});
+
 });
 
 
