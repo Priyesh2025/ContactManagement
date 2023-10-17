@@ -10,7 +10,7 @@ const userSchema = mongoose.Schema({
         required : [true , "Please provide EMAILID"],
         unique : [true , "Email Address already exist."],
     },
-    passwod :{
+    password :{
         type : String,
         required : [true , "Please provide PASSWORD"],
 
