@@ -9,6 +9,7 @@ const validateToken = asyncHandler(async (req,res,next)=>{
         res.status(400)
         throw new Error("Missing header");
     }
+    console.log(authHeader);
 
     if(!authHeader.startsWith("Bearer")){
         res.status(400);
@@ -21,15 +22,18 @@ const validateToken = asyncHandler(async (req,res,next)=>{
         res.status(400);
         throw new Error("token not extracted")
     }
+    console.log(token);
     jwt.verify(token,process.env.JWT_SECRET_TOKEN,(err,decoded)=>{
         if(err){
-            res.status(400);
+            res.status(401);
             throw new Error("User unauthorized");
         }
-        res.user = decoded.user;
+        req.user = decoded.user;
+        console.log(req.user);
+        next();
     })
 
-    next();
+    
     
 })
 

@@ -1,5 +1,3 @@
-// we want all the contact related data and operation to be done only be valid user (owner).
-// Therefore we will make all of them as private using validate token
 
 
 
@@ -19,10 +17,9 @@ request : GET /api/contacts
 */
 
 const getContacts = asyncHandler(async (req,res)=>{
-    
-    const contact = await Contact.find();       // finding contact <model>.<method-name>()
+    const contact = await Contact.find({userId : req.user.id});       // finding contact <model>.<method-name>()
     res.status(200).json(contact);
-})
+});
 
 
 
@@ -42,7 +39,8 @@ const createContact = asyncHandler(async (req,res)=>{
     const contact = await Contact.create({
         name,
         email,
-        MobileNo
+        MobileNo,
+        userId : req.user.id,
     })
 
     res.status(200).json(contact);
@@ -55,10 +53,18 @@ request : GET /api/contacts/:id
 */
 const getContactByID = asyncHandler(async (req,res)=>{
 
+    
+
     const contact = await Contact.findById(req.params.id);
     if(!contact){   
         res.status(404);
         throw new Error("Contact Not found");
+    }
+
+    if(req.user.id !== contact.userId.toString())       // checking for the same user is trying to access data
+    {
+        res.status(403);
+        throw new Error("Seeing others contact prohibited");
     }
     res.status(200).json(contact);
 })
@@ -75,6 +81,12 @@ const updateContactWithID = asyncHandler(async (req,res)=>{
     if(!contact){   
         res.status(404);
         throw new Error("Contact Not found");
+    }
+
+    if(req.user.id !== contact.userId.toString())       // checking for the same user is trying to access data
+    {
+        res.status(403);
+        throw new Error("Updating others contact prohibited");
     }
 
     // update 
@@ -102,8 +114,14 @@ const deleteContactWithID = asyncHandler(async (req,res)=>{
         throw new Error("Contact Not found");
     }
 
+    if(req.user.id !== contact.userId.toString())       // checking for the same user is trying to access data
+    {
+        res.status(403);
+        throw new Error("deleting others contact prohibited");
+    }
+
     try{
-        await Contact.deleteOne();
+        await Contact.deleteOne({_id : req.params.id});
     }catch(err){
         console.log(err);
     }
